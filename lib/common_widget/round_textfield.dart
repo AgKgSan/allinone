@@ -8,6 +8,7 @@ class RoundTextfield extends StatelessWidget {
   final bool obscureText;
   final Color? bgColor;
   final Widget? left;
+  final String? Function(String?)? validator;
   const RoundTextfield(
       {super.key,
       required this.hintText,
@@ -15,6 +16,7 @@ class RoundTextfield extends StatelessWidget {
       this.keyboardType,
       this.bgColor,
       this.left,
+      this.validator,
       this.obscureText = false});
 
   @override
@@ -28,26 +30,33 @@ class RoundTextfield extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if(left!=null)Padding(
-            padding: const EdgeInsets.only(left: 15),
-            child: left!,
-          ),
+          if (left != null)
+            Padding(
+              padding: const EdgeInsets.only(left: 15),
+              child: left!,
+            ),
           Expanded(
-            child: TextField(
+            child: TextFormField(
               autocorrect: false,
               controller: controller,
               obscureText: obscureText,
               keyboardType: keyboardType,
+              validator: validator,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                hintText: hintText,
-                hintStyle: TextStyle(
-                    color: TColor.placeholder,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
-              ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  hintText: hintText,
+                  hintStyle: TextStyle(
+                      color: TColor.placeholder,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
+                  errorStyle: TextStyle(
+                    color: TColor.primary,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  )),
             ),
           ),
         ],
@@ -96,7 +105,9 @@ class RoundTitleTextfield extends StatelessWidget {
               children: [
                 Container(
                   height: 55,
-                  margin: const EdgeInsets.only(top: 8,),
+                  margin: const EdgeInsets.only(
+                    top: 8,
+                  ),
                   alignment: Alignment.topLeft,
                   child: TextField(
                     autocorrect: false,
@@ -122,7 +133,10 @@ class RoundTitleTextfield extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   child: Text(
                     title,
-                    style: TextStyle(color: TColor.primaryText, fontSize: 13,fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: TColor.primaryText,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold),
                   ),
                 )
               ],
@@ -133,4 +147,3 @@ class RoundTitleTextfield extends StatelessWidget {
     );
   }
 }
-

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:all_in_1/common/color_extension.dart';
 import 'package:all_in_1/common_widget/round_button.dart';
 import 'package:all_in_1/common_widget/round_icon_button.dart';
@@ -7,6 +9,7 @@ import 'package:all_in_1/view/login/sign_up_view.dart';
 import 'package:flutter/material.dart';
 
 import '../onboarding/onboarding_view.dart';
+import 'package:http/http.dart' as http;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -16,8 +19,48 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final _formKey = GlobalKey<FormState>();
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
+  String? _errorMessage;
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      final email = txtEmail.text;
+      final password = txtPassword.text;
+
+      // Replace with your API URL
+      final url = Uri.parse('http://127.0.0.1:8000/api/login');
+
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Handle successful login
+        print('Login successful: ${response.body}');
+      } else {
+        final errors = responseBody['errors'] as Map<String, dynamic>?;
+        final firstErrorKey = errors!.keys.first;
+        final firstErrorMessage = errors[firstErrorKey][0];
+
+        setState(() {
+          _errorMessage = firstErrorMessage ?? 'Login failed';
+        });
+        // Show an error message to the user
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,34 +99,46 @@ class _LoginViewState extends State<LoginView> {
               const SizedBox(
                 height: 25,
               ),
+              Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      RoundTextfield(
+                        hintText: "Your Email",
+                        controller: txtEmail,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      RoundTextfield(
+                        hintText: "Password",
+                        controller: txtPassword,
+                        obscureText: true,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            _errorMessage!,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      RoundButton(
+                        title: "Login",
+                        onpressed: _login,
+                      ),
+                    ],
+                  )),
 
-              RoundTextfield(
-                hintText: "Your Email",
-                controller: txtEmail,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              RoundTextfield(
-                hintText: "Password",
-                controller: txtPassword,
-                obscureText: true,
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              RoundButton(
-                title: "Login",
-                onpressed: () {
-                   Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const OnBoardingView(),
-                    ),
-                  );
-                },
-              ),
               const SizedBox(
                 height: 4,
               ),
