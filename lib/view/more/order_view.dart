@@ -1,3 +1,5 @@
+import 'package:all_in_1/models/local_cart.dart';
+import 'package:all_in_1/services/local_cart_service.dart';
 import 'package:flutter/material.dart';
 // import 'package:food_delivery/common/color_extension.dart';
 // import 'package:food_delivery/common_widget/round_button.dart';
@@ -16,6 +18,31 @@ class MyOrderView extends StatefulWidget {
 }
 
 class _MyOrderViewState extends State<MyOrderView> {
+  final LocalCartService _cartService = LocalCartService();
+  List<LocalCartItem>? items = [];
+  double _totalPrice = 0.0;
+  double deli_fee = 1500;
+
+  @override
+  void initState() {
+    super.initState();
+    getCartItem();
+  }
+
+  Future<void> getCartItem() async {
+    try {
+      final cart_items = await _cartService.getCartItems();
+
+      setState(() {
+        items = cart_items;
+        _totalPrice = cart_items.fold(
+            0, (total, item) => total + (item.price * item.quantity).round());
+      });
+    } catch (e) {
+      // Handle error appropriately
+    }
+  }
+
   List itemArr = [
     {"name": "Shan Noodle", "qty": "1", "price": 1500},
     {"name": "Fried Rice", "qty": "1", "price": 2500},
@@ -63,124 +90,124 @@ class _MyOrderViewState extends State<MyOrderView> {
                   ],
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.asset(
-                          "assets/img/logo.PNG",
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                        )),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Res Name",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: TColor.primaryText,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/img/rate.png",
-                                width: 10,
-                                height: 10,
-                                fit: BoxFit.cover,
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                "4.9",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.primary, fontSize: 12),
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "(124 Ratings)",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Shop Type",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                              Text(
-                                " . ",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.primary, fontSize: 12),
-                              ),
-                              Text(
-                                "Food Type",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/img/location-pin.png",
-                                width: 13,
-                                height: 13,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "Address",
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: TColor.secondaryText,
-                                      fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding:
+              //       const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+              //   child: Row(
+              //     children: [
+              //       ClipRRect(
+              //           borderRadius: BorderRadius.circular(15),
+              //           child: Image.asset(
+              //             "assets/img/logo.PNG",
+              //             width: 120,
+              //             height: 120,
+              //             fit: BoxFit.cover,
+              //           )),
+              //       const SizedBox(
+              //         width: 8,
+              //       ),
+              //       Expanded(
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               "Res Name",
+              //               textAlign: TextAlign.center,
+              //               style: TextStyle(
+              //                   color: TColor.primaryText,
+              //                   fontSize: 18,
+              //                   fontWeight: FontWeight.w700),
+              //             ),
+              //             const SizedBox(
+              //               height: 4,
+              //             ),
+              //             Row(
+              //               mainAxisAlignment: MainAxisAlignment.start,
+              //               children: [
+              //                 Image.asset(
+              //                   "assets/img/rate.png",
+              //                   width: 10,
+              //                   height: 10,
+              //                   fit: BoxFit.cover,
+              //                 ),
+              //                 const SizedBox(
+              //                   width: 4,
+              //                 ),
+              //                 Text(
+              //                   "4.9",
+              //                   textAlign: TextAlign.center,
+              //                   style: TextStyle(
+              //                       color: TColor.primary, fontSize: 12),
+              //                 ),
+              //                 const SizedBox(
+              //                   width: 8,
+              //                 ),
+              //                 Text(
+              //                   "(124 Ratings)",
+              //                   textAlign: TextAlign.center,
+              //                   style: TextStyle(
+              //                       color: TColor.secondaryText, fontSize: 12),
+              //                 ),
+              //               ],
+              //             ),
+              //             const SizedBox(
+              //               height: 4,
+              //             ),
+              //             Row(
+              //               mainAxisAlignment: MainAxisAlignment.start,
+              //               children: [
+              //                 Text(
+              //                   "Shop Type",
+              //                   textAlign: TextAlign.center,
+              //                   style: TextStyle(
+              //                       color: TColor.secondaryText, fontSize: 12),
+              //                 ),
+              //                 Text(
+              //                   " . ",
+              //                   textAlign: TextAlign.center,
+              //                   style: TextStyle(
+              //                       color: TColor.primary, fontSize: 12),
+              //                 ),
+              //                 Text(
+              //                   "Food Type",
+              //                   textAlign: TextAlign.center,
+              //                   style: TextStyle(
+              //                       color: TColor.secondaryText, fontSize: 12),
+              //                 ),
+              //               ],
+              //             ),
+              //             const SizedBox(
+              //               height: 4,
+              //             ),
+              //             Row(
+              //               mainAxisAlignment: MainAxisAlignment.start,
+              //               children: [
+              //                 Image.asset(
+              //                   "assets/img/location-pin.png",
+              //                   width: 13,
+              //                   height: 13,
+              //                   fit: BoxFit.contain,
+              //                 ),
+              //                 const SizedBox(
+              //                   width: 4,
+              //                 ),
+              //                 Expanded(
+              //                   child: Text(
+              //                     "Address",
+              //                     textAlign: TextAlign.left,
+              //                     style: TextStyle(
+              //                         color: TColor.secondaryText,
+              //                         fontSize: 12),
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(
                 height: 20,
               ),
@@ -190,7 +217,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   padding: EdgeInsets.zero,
-                  itemCount: itemArr.length,
+                  itemCount: items!.length ?? 0,
                   separatorBuilder: ((context, index) => Divider(
                         indent: 25,
                         endIndent: 25,
@@ -198,7 +225,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                         height: 1,
                       )),
                   itemBuilder: ((context, index) {
-                    var cObj = itemArr[index] as Map? ?? {};
+                    var cObj = items![index];
                     return Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 15, horizontal: 25),
@@ -207,7 +234,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                         children: [
                           Expanded(
                             child: Text(
-                              "${cObj["name"].toString()} x${cObj["qty"].toString()}",
+                              "${cObj.name} x ${cObj.quantity}",
                               style: TextStyle(
                                   color: TColor.primaryText,
                                   fontSize: 13,
@@ -218,7 +245,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                             width: 15,
                           ),
                           Text(
-                            "\K\s${cObj["price"].toString()}",
+                            "\K\s${cObj.price * cObj.quantity}",
                             style: TextStyle(
                                 color: TColor.primaryText,
                                 fontSize: 13,
@@ -278,7 +305,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\K\s9500",
+                          "\K\s${_totalPrice.round()}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 13,
@@ -301,7 +328,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\K\s1500",
+                          "\K\s${deli_fee.round()}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 13,
@@ -331,7 +358,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\K\s11000",
+                          "\K\s${(_totalPrice + 1500).round()}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 22,

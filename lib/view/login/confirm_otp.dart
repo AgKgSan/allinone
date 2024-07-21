@@ -1,20 +1,119 @@
+import 'dart:convert';
+
 import 'package:all_in_1/common/color_extension.dart';
 import 'package:all_in_1/common_widget/round_button.dart';
 
 import 'package:all_in_1/view/home/home_view.dart';
+import 'package:all_in_1/view/login/login_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
+import 'package:http/http.dart' as http;
 
 class ConfirmOTPView extends StatefulWidget {
-  const ConfirmOTPView({super.key});
+  const ConfirmOTPView({super.key, required this.email});
 
+  final String email;
   @override
   State<ConfirmOTPView> createState() => _ConfirmOTPViewState();
 }
 
 class _ConfirmOTPViewState extends State<ConfirmOTPView> {
-  final _otpPinFieldController = GlobalKey<OtpPinFieldState>();
+  final TextEditingController _otpController = TextEditingController();
+  String? _errorMessage;
+  String? _successMessage;
+
+  Future<void> _verifyOtp([String? otp]) async {
+    // Replace with your API URL
+    if (otp == null) {
+      setState(() {
+        _errorMessage = 'Please Enter OTP';
+      });
+    } else {
+      final url = Uri.parse('http://127.0.0.1:8000/api/emailVerify');
+
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "email": widget.email,
+          "code": otp,
+        }),
+      );
+
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Handle successful login
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginView(),
+          ),
+        );
+      } else {
+        final errors = responseBody['errors'] as Map<String, dynamic>?;
+        print(errors);
+        if (errors == null) {
+          setState(() {
+            _errorMessage = 'Verify failed';
+          });
+        } else {
+          final firstErrorKey = errors.keys.first;
+          final firstErrorMessage = errors[firstErrorKey][0];
+
+          setState(() {
+            _errorMessage = firstErrorMessage ?? 'Verify failed';
+          });
+        }
+        // Show an error message to the user
+      }
+    }
+  }
+
+  Future<void> _resentOtp() async {
+    // Replace with your API URL
+    final url = Uri.parse('http://127.0.0.1:8000/api/resendOtp');
+
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        "email": widget.email,
+      }),
+    );
+
+    final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // Handle successful login
+      setState(() {
+        _successMessage = "Opt is successfully re-sent to ${widget.email}";
+      });
+    } else {
+      final errors = responseBody['errors'] as Map<String, dynamic>?;
+      print(errors);
+      if (errors == null) {
+        setState(() {
+          _errorMessage = 'Verify failed';
+        });
+      } else {
+        final firstErrorKey = errors.keys.first;
+        final firstErrorMessage = errors[firstErrorKey][0];
+
+        setState(() {
+          _errorMessage = firstErrorMessage ?? 'Verify failed';
+        });
+      }
+      // Show an error message to the user
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +132,7 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
               ),
               //LoginButton
               Text(
-                "We have sent a OTP to your Mobile",
+                "We have sent a OTP to your Email",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: TColor.primaryText,
@@ -45,7 +144,7 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
                 height: 15,
               ),
               Text(
-                "Check your mobile number 09*******48 ",
+                "Check your email ${widget.email}",
                 style: TextStyle(
                   color: TColor.secondaryText,
                   fontSize: 14,
@@ -58,7 +157,14 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
               SizedBox(
                 height: 60,
                 child: OtpPinField(
-                  key: _otpPinFieldController,
+                  otpPinFieldDecoration:
+                      OtpPinFieldDecoration.defaultPinBoxDecoration,
+                  onSubmit: (otp) => _verifyOtp(otp),
+                  onChange: (value) {
+                    setState(() {
+                      _errorMessage = null; // Clear error message on change
+                    });
+                  },
 
                   ///in case you want to enable autoFill
                   autoFillEnable: false,
@@ -66,43 +172,8 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
                   ///for Ios it is not needed as the SMS autofill is provided by default, but not for Android, that's where this key is useful.
                   textInputAction: TextInputAction.done,
 
-                  ///in case you want to change the action of keyboard
-                  /// to clear the Otp pin Controller
-                  onSubmit: (text) {
-                    print('Entered pin is $text');
-
-                    /// return the entered pin
-                  },
-                  onChange: (text) {
-                    print('Enter on change pin is $text');
-
-                    /// return the entered pin
-                  },
-                  onCodeChanged: (code) {
-                    print('onCodeChanged  is $code');
-                  },
-
                   /// to decorate your Otp_Pin_Field
                   otpPinFieldStyle: const OtpPinFieldStyle(
-                    /// border color for inactive/unfocused Otp_Pin_Field
-                    // defaultFieldBorderColor: Colors.red,
-
-                    /// border color for active/focused Otp_Pin_Field
-                    // activeFieldBorderColor: Colors.indigo,
-
-                    /// Background Color for inactive/unfocused Otp_Pin_Field
-                    // defaultFieldBackgroundColor: Colors.yellow,
-
-                    /// Background Color for active/focused Otp_Pin_Field
-                    // activeFieldBackgroundColor: Colors.cyanAccent,
-
-                    /// Background Color for filled field pin box
-                    // filledFieldBackgroundColor: Colors.green,
-
-                    /// border Color for filled field pin box
-                    // filledFieldBorderColor: Colors.green,
-                    //
-                    /// gradient border Color for field pin box
                     activeFieldBorderGradient: LinearGradient(
                         colors: [Colors.black, Colors.redAccent]),
                     filledFieldBorderGradient: LinearGradient(
@@ -110,7 +181,7 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
                     defaultFieldBorderGradient:
                         LinearGradient(colors: [Colors.orange, Colors.brown]),
                   ),
-                  maxLength: 4,
+                  maxLength: 6,
 
                   /// no of pin field
                   showCursor: true,
@@ -160,12 +231,10 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
 
                   /// predefine decorate of pinField use  OtpPinFieldDecoration.defaultPinBoxDecoration||OtpPinFieldDecoration.underlinedPinBoxDecoration||OtpPinFieldDecoration.roundedPinBoxDecoration
                   ///use OtpPinFieldDecoration.custom  (by using this you can make Otp_Pin_Field according to yourself like you can give fieldBorderRadius,fieldBorderWidth and etc things)
-                  otpPinFieldDecoration:
-                      OtpPinFieldDecoration.defaultPinBoxDecoration,
                 ),
               ),
 
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
 
@@ -177,28 +246,36 @@ class _ConfirmOTPViewState extends State<ConfirmOTPView> {
               // const SizedBox(
               //   height: 30,
               // ),
-
-              RoundButton(
-                title: "Confrim",
-                onpressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeView(),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    _errorMessage!,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              if (_successMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    _successMessage!,
+                    textAlign: TextAlign.left,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              // RoundButton(title: "Confrim", onpressed: () => _verifyOtp()),
 
               TextButton(
-                onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => const SignUpView(),
-                  //   ),
-                  // );
-                },
+                onPressed: () => _resentOtp(),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

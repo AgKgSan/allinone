@@ -1,4 +1,3 @@
-
 import 'package:all_in_1/theme/themeviews/themeviews.dart';
 import 'package:flutter/material.dart';
 
@@ -14,21 +13,21 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  List setArr =[
+  List setArr = [
     {
       "index": "2",
       "name": "Theme",
       "image": "assets/img/digital-wallet.png",
       "base": 0
     },
-    {
-      "index": "1",
-      "name": "Languages",
-      "image": "assets/img/clipboard.png",
-      "base": 0
-    }
+    // {
+    //   "index": "1",
+    //   "name": "Languages",
+    //   "image": "assets/img/clipboard.png",
+    //   "base": 0
+    // }
   ];
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -41,16 +40,27 @@ class _SettingsState extends State<Settings> {
                 height: 46,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "More",
-                      style: TextStyle(
-                          color: TColor.primaryText,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Image.asset("assets/img/btn_back.png",
+                          width: 20, height: 20),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Text(
+                        "Settings",
+                        style: TextStyle(
+                            color: TColor.primaryText,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800),
+                      ),
                     ),
                     IconButton(
                       onPressed: () {
@@ -69,7 +79,6 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
               ListView.builder(
-                
                   padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -94,7 +103,6 @@ class _SettingsState extends State<Settings> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const ThemeViews()));
-                          
 
                           default:
                         }

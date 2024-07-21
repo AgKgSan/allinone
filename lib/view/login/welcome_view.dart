@@ -28,12 +28,11 @@ class _WelcomeViewState extends State<WelcomeView> {
               //   "assets/img/welcome_top_shape.jpg",
               //   width: media.width,
               // ),
-              
-              
+
               Image.asset(
                 "assets/img/logo.PNG",
-                width: media.width ,
-                height: media.height*0.6,
+                width: media.width,
+                height: media.height * 0.6,
                 fit: BoxFit.contain,
               ),
             ],
@@ -41,26 +40,25 @@ class _WelcomeViewState extends State<WelcomeView> {
           SizedBox(
             height: media.height * 0.05,
           ),
-
           Text(
-                  "Welcome to our All In One Food Delivery Service",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: TColor.secondaryText,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-          SizedBox(
-            height: media.width * 0.1 ,
+            "Welcome to our All In One Food Delivery Service",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: TColor.secondaryText,
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+            ),
           ),
-
+          SizedBox(
+            height: media.width * 0.1,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: RoundButton(
               title: "Login",
               onpressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>const LoginView()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const LoginView()));
               },
             ),
           ),
@@ -73,8 +71,10 @@ class _WelcomeViewState extends State<WelcomeView> {
               title: "Create an Account",
               type: RoundButtonType.textPrimary,
               onpressed: () {
-                 Navigator.push(context, MaterialPageRoute(builder: (context)=>const SignUpView()));
-              
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpView()));
               },
             ),
           ),

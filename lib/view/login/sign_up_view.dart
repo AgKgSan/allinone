@@ -61,7 +61,7 @@ class _SignUpViewState extends State<SignUpView> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const ConfirmOTPView(),
+            builder: (context) => ConfirmOTPView(email: email),
           ),
         );
       } else {

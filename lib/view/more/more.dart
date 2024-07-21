@@ -1,15 +1,18 @@
+import 'dart:convert';
+
 import 'package:all_in_1/common/color_extension.dart';
+import 'package:all_in_1/view/login/login_view.dart';
 import 'package:all_in_1/view/more/inbox.dart';
 import 'package:all_in_1/view/more/notification.dart';
+import 'package:all_in_1/view/more/order_history.dart';
 import 'package:all_in_1/view/more/settings.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'aboutus.dart';
 import 'order_view.dart';
 import 'payment_detail.dart';
-
+import 'package:http/http.dart' as http;
 
 class MoreView extends StatefulWidget {
   const MoreView({super.key});
@@ -20,49 +23,117 @@ class MoreView extends StatefulWidget {
 
 class _MoreViewState extends State<MoreView> {
   List moreArr = [
-    {
-      "index": "1",
-      "name": "Payment Details",
-      "image": "assets/img/digital-wallet.png",
-      "base": 0
-    },
+    // {
+    //   "index": "1",
+    //   "name": "Payment Details",
+    //   "image": "assets/img/digital-wallet.png",
+    //   "base": 0
+    // },
     {
       "index": "2",
       "name": "My Orders",
       "image": "assets/img/clipboard.png",
       "base": 0
     },
-    {
-      "index": "3",
-      "name": "Notifications",
-      "image": "assets/img/bell.png",
-      "base": 15
-    },
-    {
-      "index": "4",
-      "name": "Inbox",
-      "image": "assets/img/mail-inbox-app.png",
-      "base": 0
-    },
+    // {
+    //   "index": "3",
+    //   "name": "Notifications",
+    //   "image": "assets/img/bell.png",
+    //   "base": 15
+    // },
+    // {
+    //   "index": "4",
+    //   "name": "Inbox",
+    //   "image": "assets/img/mail-inbox-app.png",
+    //   "base": 0
+    // },
     {
       "index": "5",
       "name": "About Us",
       "image": "assets/img/info.png",
       "base": 0
     },
-    {
-      "index": "6",
-      "name": "settings",
-      "image": "assets/img/setting.png",
-      "base": 0
-    },
-    {
-      "index": "7",
-      "name": "Logout",
-      "image": "assets/img/exit.png",
-      "base": 0
-    },
+    // {
+    //   "index": "6",
+    //   "name": "settings",
+    //   "image": "assets/img/setting.png",
+    //   "base": 0
+    // },
+    {"index": "7", "name": "Logout", "image": "assets/img/exit.png", "base": 0},
   ];
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button to close dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to logout?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: _logout,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _logout() async {
+    final url = Uri.parse('http://127.0.0.1:8000/api/logout');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? token = prefs.getString('access_token');
+
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print(response.body);
+    final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // await authService.logout();
+
+      await prefs.remove('access_token');
+      await prefs.remove('user');
+
+      Navigator.of(context).pop();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginView(),
+        ),
+      );
+    } else {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to logout'),
+        ),
+      );
+      // Show an error message to the user
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +176,6 @@ class _MoreViewState extends State<MoreView> {
                 ),
               ),
               ListView.builder(
-                
                   padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
@@ -129,7 +199,8 @@ class _MoreViewState extends State<MoreView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const MyOrderView()));
+                                    builder: (context) =>
+                                        const OrderHistory()));
                           case "3":
                             Navigator.push(
                                 context,
@@ -146,13 +217,13 @@ class _MoreViewState extends State<MoreView> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const AboutUs()));
-                                    case "6":
+                          case "6":
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const Settings()));
                           case "7":
-                            // ServiceCall.logout();
+                            _confirmLogout(context);
 
                           default:
                         }

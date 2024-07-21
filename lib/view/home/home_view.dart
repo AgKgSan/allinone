@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:all_in_1/common/color_extension.dart';
 import 'package:all_in_1/common_widget/cata.dart';
 import 'package:all_in_1/common_widget/most_popular.dart';
 import 'package:all_in_1/common_widget/round_textfield.dart';
 import 'package:all_in_1/common_widget/view_all.dart';
+import 'package:all_in_1/models/category.dart';
+import 'package:all_in_1/services/category_service.dart';
 import 'package:all_in_1/view/more/order_view.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../../common_widget/popular_resutaurant.dart';
 import '../../common_widget/recent_item.dart';
@@ -18,6 +23,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   TextEditingController txtSearch = TextEditingController();
+  final CategoryService categoryService = CategoryService();
 
   List catArr = [
     {"image": "assets/img/offerCat.png", "name": "Offers"},
@@ -25,7 +31,6 @@ class _HomeViewState extends State<HomeView> {
     {"image": "assets/img/myanmarfood.webp", "name": "Myanmar"},
     {"image": "assets/img/offerCat1.png", "name": "China"},
     {"image": "assets/img/offerCat1.png", "name": "Thai"},
-
   ];
 
   List popArr = [
@@ -75,7 +80,7 @@ class _HomeViewState extends State<HomeView> {
   ];
 
   List recentArr = [
-  {
+    {
       "image": "assets/img/myanmarfood.webp",
       "name": "Res type",
       "rate": "4.9",
@@ -92,7 +97,6 @@ class _HomeViewState extends State<HomeView> {
       "food_type": "Food type"
     },
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -121,11 +125,10 @@ class _HomeViewState extends State<HomeView> {
                   IconButton(
                     onPressed: () {
                       Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const MyOrderView()),
-                            );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyOrderView()),
+                      );
                     },
                     icon: Image.asset(
                       "assets/img/shopping_cart.png",
@@ -184,98 +187,106 @@ class _HomeViewState extends State<HomeView> {
                 controller: txtSearch,
                 // bgColor: TColor.primary,
                 left: Container(
-                    alignment: Alignment.center,
-                    width: 30,
-                    child: Image.asset(
-                      "assets/img/search.png",
-                      width: 20,
-                      height: 20,
-                    ),
+                  alignment: Alignment.center,
+                  width: 30,
+                  child: Image.asset(
+                    "assets/img/search.png",
+                    width: 20,
+                    height: 20,
                   ),
+                ),
               ),
             ),
             const SizedBox(
-                height: 30,
-              ),
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  itemCount: catArr.length,
-                  itemBuilder: ((context, index) {
-                    var cObj = catArr[index] as Map? ?? {};
-                    return Cata(
-                      cObj: cObj,
-                      onTap: () {},
+              height: 30,
+            ),
+            SizedBox(
+              height: 120,
+              child: FutureBuilder<List<Category>>(
+                future: categoryService.fetchCategories(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    final categories = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      itemCount: categories.length,
+                      itemBuilder: ((context, index) {
+                        final category = categories[index];
+                        return Cata(
+                          cObj: category,
+                          onTap: () {},
+                        );
+                      }),
                     );
-                  }),
-                ),
+                  }
+                },
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAll(
-                  title: "Popular Restaurants",
-                  onView: () {
-
-                  },
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ViewAll(
+                title: "Popular Restaurants",
+                onView: () {},
               ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: popArr.length,
-                itemBuilder: ((context, index) {
-                  var pObj = popArr[index] as Map? ?? {};
-                  return PopularRestaurant(
-                    pObj: pObj,
-                    onTap: () {},
-                  );
-                }),
+            ),
+            // ListView.builder(
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   shrinkWrap: true,
+            //   padding: EdgeInsets.zero,
+            //   itemCount: popArr.length,
+            //   itemBuilder: ((context, index) {
+            //     var pObj = popArr[index] as Map? ?? {};
+            //     return PopularRestaurant(
+            //       pObj: pObj,
+            //       onTap: () {},
+            //     );
+            //   }),
+            // ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ViewAll(
+                title: "Most Popular",
+                onView: () {},
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAll(
-                  title: "Most Popular",
-                  onView: () {},
-                ),
-              ),
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  itemCount: mostPopArr.length,
-                  itemBuilder: ((context, index) {
-                    var mObj = mostPopArr[index] as Map? ?? {};
-                    return MostPopular(
-                      mObj: mObj,
-                      onTap: () {},
-                    );
-                  }),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAll(
-                  title: "Recent Items",
-                  onView: () {},
-                ),
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
+            ),
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 15),
-                itemCount: recentArr.length,
+                itemCount: mostPopArr.length,
                 itemBuilder: ((context, index) {
-                  var rObj = recentArr[index] as Map? ?? {};
-                  return RecentItem(
-                    rObj: rObj,
+                  var mObj = mostPopArr[index] as Map? ?? {};
+                  return MostPopular(
+                    mObj: mObj,
                     onTap: () {},
                   );
                 }),
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ViewAll(
+                title: "Recent Items",
+                onView: () {},
+              ),
+            ),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              itemCount: recentArr.length,
+              itemBuilder: ((context, index) {
+                var rObj = recentArr[index] as Map? ?? {};
+                return RecentItem(
+                  rObj: rObj,
+                  onTap: () {},
+                );
+              }),
+            ),
           ],
         ),
       )),

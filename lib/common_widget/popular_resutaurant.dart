@@ -16,54 +16,49 @@ class PopularRestaurant extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-             ClipRRect(
+            ClipRRect(
               // borderRadius: BorderRadius.circular(70),
-               child: Image.asset(
-                  pObj["image"].toString(),
-                  width: double.maxFinite,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-             ),
-              const SizedBox(
+              child: Image.asset(
+                pObj["image"].toString(),
+                width: double.maxFinite,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(
               width: 8,
             ),
-
-             const SizedBox(
+            const SizedBox(
               height: 12,
             ),
-
-             Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 20),
-               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      pObj["name"],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: TColor.primaryText,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-
-                        Image.asset(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    pObj["name"],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: TColor.primaryText,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
                         "assets/img/rate.png",
                         width: 10,
                         height: 10,
                         fit: BoxFit.cover,
                       ),
-
                       const SizedBox(
                         width: 4,
                       ),
-
                       Text(
                         pObj["rate"],
                         textAlign: TextAlign.center,
@@ -78,35 +73,31 @@ class PopularRestaurant extends StatelessWidget {
                         style: TextStyle(
                             color: TColor.secondaryText, fontSize: 11),
                       ),
-
                       const SizedBox(
                         width: 8,
                       ),
-
-                        Text(
-                          pObj["type"],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: TColor.secondaryText, fontSize: 11),
-                        ),
-                        Text(
-                          " . ",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: TColor.primary, fontSize: 11),
-                        ),
-                        Text(
-                          pObj["food_type"],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: TColor.secondaryText, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                    
-                  ],
-                ),
-             ),
-            
+                      Text(
+                        pObj["type"],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: TColor.secondaryText, fontSize: 11),
+                      ),
+                      Text(
+                        " . ",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: TColor.primary, fontSize: 11),
+                      ),
+                      Text(
+                        pObj["food_type"],
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: TColor.secondaryText, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

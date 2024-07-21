@@ -1,13 +1,20 @@
+import 'dart:convert';
+
+import 'package:all_in_1/models/item.dart';
+import 'package:all_in_1/services/item_service.dart';
+import 'package:all_in_1/services/local_cart_service.dart';
 import 'package:all_in_1/view/more/order_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../common/color_extension.dart';
 import '../../common_widget/round_icon_button.dart';
 
-
 class ItemDetails extends StatefulWidget {
-  const ItemDetails({super.key});
+  final num id;
+
+  const ItemDetails({super.key, required this.id});
 
   @override
   State<ItemDetails> createState() => _ItemDetailsState();
@@ -17,17 +24,64 @@ class _ItemDetailsState extends State<ItemDetails> {
   double price = 2000;
   int qty = 1;
   bool isFav = false;
+  final ItemService itemService = ItemService();
+  Item? item;
+  bool isLoading = true;
+  final LocalCartService _cartService = LocalCartService();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchItemDetail();
+  }
+
+  Future<void> fetchItemDetail() async {
+    try {
+      final details = await itemService.fetchItemById(widget.id);
+      setState(() {
+        item = details;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error appropriately
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Item Details'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (item == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Item Details'),
+        ),
+        body: const Center(
+          child: Text('Failed to load item details'),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: TColor.white,
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
-          Image.asset(
-            "assets/img/logo.PNG",
+          Image.network(
+            "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
             width: media.width,
             height: media.width,
             fit: BoxFit.cover,
@@ -69,7 +123,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
                                 child: Text(
-                                  "Immortal Bargar",
+                                  item!.name,
                                   style: TextStyle(
                                       color: TColor.primaryText,
                                       fontSize: 22,
@@ -94,7 +148,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                         IgnorePointer(
                                           ignoring: true,
                                           child: RatingBar.builder(
-                                            initialRating: 4,
+                                            initialRating: item!.rating,
                                             minRating: 1,
                                             direction: Axis.horizontal,
                                             allowHalfRating: true,
@@ -116,7 +170,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                           height: 4,
                                         ),
                                         Text(
-                                          " 4 Star Ratings",
+                                          " ${item!.rating} Star Ratings",
                                           style: TextStyle(
                                               color: TColor.primary,
                                               fontSize: 11,
@@ -129,7 +183,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          "\K\s${price.toStringAsFixed(2)}",
+                                          "\K\s${item!.price}",
                                           style: TextStyle(
                                               color: TColor.primaryText,
                                               fontSize: 31,
@@ -171,7 +225,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
                                 child: Text(
-                                  "Immortal Pizza is .....",
+                                  "des",
                                   style: TextStyle(
                                       color: TColor.secondaryText,
                                       fontSize: 12),
@@ -212,12 +266,14 @@ class _ItemDetailsState extends State<ItemDetails> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 15),
                                   decoration: BoxDecoration(
-                                      color: TColor.textfield,
-                                      borderRadius: BorderRadius.circular(10),),
+                                    color: TColor.textfield,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton(
                                       isExpanded: true,
-                                      items: ["Small","Normal", "Family"].map((e) {
+                                      items: ["Small", "Normal", "Family"]
+                                          .map((e) {
                                         return DropdownMenuItem(
                                           value: e,
                                           child: Text(
@@ -255,7 +311,10 @@ class _ItemDetailsState extends State<ItemDetails> {
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton(
                                       isExpanded: true,
-                                      items: ["Chicken", "Pork",].map((e) {
+                                      items: [
+                                        "Chicken",
+                                        "Pork",
+                                      ].map((e) {
                                         return DropdownMenuItem(
                                           value: e,
                                           child: Text(
@@ -441,7 +500,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                                     height: 15,
                                                   ),
                                                   Text(
-                                                    "\K\s${(price * qty).toString()}",
+                                                    "\K\s${(item!.price * qty).toString()}",
                                                     style: TextStyle(
                                                         color:
                                                             TColor.primaryText,
@@ -460,7 +519,18 @@ class _ItemDetailsState extends State<ItemDetails> {
                                                         icon:
                                                             "assets/img/shopping_add.png",
                                                         color: TColor.primary,
-                                                        onPressed: () {}),
+                                                        onPressed: () async {
+                                                          await _cartService
+                                                              .addToCart(
+                                                                  item!, qty);
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                                content: Text(
+                                                                    '${item!.name} added to cart!')),
+                                                          );
+                                                        }),
                                                   )
                                                 ],
                                               )),
@@ -510,22 +580,22 @@ class _ItemDetailsState extends State<ItemDetails> {
                       ),
                     ],
                   ),
-                  Container(
-                    height: media.width - 20,
-                    alignment: Alignment.bottomRight,
-                    margin: const EdgeInsets.only(right: 20,top: 5),
-                    child: InkWell(
-                        onTap: () {
-                          isFav = !isFav;
-                          setState(() {});
-                        },
-                        child: Image.asset(
-                            isFav
-                                ? "assets/img/fav.png"
-                                : "assets/img/normal.png",
-                            width: 30,
-                            height: 30)),
-                  ),
+                  // Container(
+                  //   height: media.width - 20,
+                  //   alignment: Alignment.bottomRight,
+                  //   margin: const EdgeInsets.only(right: 20, top: 5),
+                  //   child: InkWell(
+                  //       onTap: () {
+                  //         isFav = !isFav;
+                  //         setState(() {});
+                  //       },
+                  //       child: Image.asset(
+                  //           isFav
+                  //               ? "assets/img/fav.png"
+                  //               : "assets/img/normal.png",
+                  //           width: 30,
+                  //           height: 30)),
+                  // ),
                 ],
               ),
             ),

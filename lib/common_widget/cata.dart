@@ -1,11 +1,12 @@
+import 'package:all_in_1/models/category.dart';
 import 'package:flutter/material.dart';
 
 import '../common/color_extension.dart';
 
 class Cata extends StatelessWidget {
-  final Map cObj;
+  final Category cObj;
   final VoidCallback onTap;
-  const Cata({super.key,required this.cObj,required this.onTap});
+  const Cata({super.key, required this.cObj, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +18,8 @@ class Cata extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                cObj["image"].toString(),
+              child: Image.network(
+                "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
                 width: 85,
                 height: 85,
                 fit: BoxFit.cover,
@@ -28,7 +29,7 @@ class Cata extends StatelessWidget {
               height: 8,
             ),
             Text(
-              cObj["name"],
+              cObj.name,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: TColor.primaryText,

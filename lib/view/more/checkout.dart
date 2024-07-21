@@ -1,11 +1,13 @@
+import 'package:all_in_1/models/checkout_modal.dart';
+import 'package:all_in_1/models/local_cart.dart';
+import 'package:all_in_1/services/checkout_service.dart';
+import 'package:all_in_1/services/local_cart_service.dart';
 import 'package:all_in_1/view/more/change_add.dart';
 import 'package:all_in_1/view/more/send_order.dart';
 import 'package:flutter/material.dart';
 
-
 import '../../common/color_extension.dart';
 import '../../common_widget/round_button.dart';
-
 
 class CheckOut extends StatefulWidget {
   const CheckOut({super.key});
@@ -15,13 +17,66 @@ class CheckOut extends StatefulWidget {
 }
 
 class _CheckOutState extends State<CheckOut> {
+  final LocalCartService _cartService = LocalCartService();
+  List<LocalCartItem>? items;
+  double _totalPrice = 0.0;
+  double deli_fee = 1500;
+
+  @override
+  void initState() {
+    super.initState();
+    getCartItem();
+  }
+
+  Future<void> getCartItem() async {
+    try {
+      final cart_items = await _cartService.getCartItems();
+
+      setState(() {
+        items = cart_items;
+        _totalPrice = cart_items.fold(
+            0, (total, item) => total + (item.price * item.quantity).round());
+      });
+    } catch (e) {
+      // Handle error appropriately
+    }
+  }
+
   List paymentArr = [
     {"name": "Cash on delivery", "icon": "assets/img/mmk.png"},
     {"name": "Kpay", "icon": "assets/img/KPay.png"},
-    
   ];
 
   int selectMethod = -1;
+
+  void submitOrder() async {
+    CheckOutModal order = CheckOutModal(
+      orderItems: items,
+      customerAddress: 'Bangkok',
+      latitude: 12.0,
+      longitude: 32.0,
+      totalPrice: (_totalPrice + deli_fee),
+      deliveryNote: 'leave at the door',
+      deliveryCost: deli_fee,
+      subTotal: _totalPrice,
+      status: 1,
+    );
+
+    // Submit the order
+    CheckoutService orderService = CheckoutService();
+    try {
+      await orderService.submitOrder(order);
+      showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (context) {
+            return const SendOrder();
+          });
+    } catch (e) {
+      print('Failed to submit order: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +152,7 @@ class _CheckOutState extends State<CheckOut> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ChangeAdd()),
+                                  builder: (context) => const ChangeAdd()),
                             );
                           },
                           child: Text(
@@ -123,7 +177,8 @@ class _CheckOutState extends State<CheckOut> {
                 height: 8,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -231,7 +286,7 @@ class _CheckOutState extends State<CheckOut> {
                               fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          "\K\s9500",
+                          "\K\s${_totalPrice.round()}",
                           style: TextStyle(
                               color: TColor.primaryText,
                               fontSize: 13,
@@ -254,7 +309,7 @@ class _CheckOutState extends State<CheckOut> {
                               fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          "\K\s1500",
+                          "\K\s${deli_fee.round()}",
                           style: TextStyle(
                               color: TColor.primaryText,
                               fontSize: 13,
@@ -277,7 +332,7 @@ class _CheckOutState extends State<CheckOut> {
                               fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          "-\K\s",
+                          "-\K\s0",
                           style: TextStyle(
                               color: TColor.primaryText,
                               fontSize: 13,
@@ -307,7 +362,7 @@ class _CheckOutState extends State<CheckOut> {
                               fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          "\$11000",
+                          "\K\s${(_totalPrice + deli_fee).round()}",
                           style: TextStyle(
                               color: TColor.primaryText,
                               fontSize: 15,
@@ -331,13 +386,7 @@ class _CheckOutState extends State<CheckOut> {
                 child: RoundButton(
                     title: "Send Order",
                     onpressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          builder: (context) {
-                            return const SendOrder();
-                          });
+                      submitOrder();
                     }),
               ),
             ],

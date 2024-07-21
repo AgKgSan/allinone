@@ -4,9 +4,11 @@ import 'package:all_in_1/common/color_extension.dart';
 import 'package:all_in_1/common_widget/round_button.dart';
 import 'package:all_in_1/common_widget/round_icon_button.dart';
 import 'package:all_in_1/common_widget/round_textfield.dart';
+import 'package:all_in_1/view/home/home_view.dart';
 import 'package:all_in_1/view/login/reset_password_view.dart';
 import 'package:all_in_1/view/login/sign_up_view.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../onboarding/onboarding_view.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +50,16 @@ class _LoginViewState extends State<LoginView> {
 
       if (response.statusCode == 200) {
         // Handle successful login
-        print('Login successful: ${response.body}');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('access_token', responseBody['access_token']);
+        await prefs.setString('user', jsonEncode(responseBody['customer']));
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OnBoardingView(),
+          ),
+        );
       } else {
         final errors = responseBody['errors'] as Map<String, dynamic>?;
         final firstErrorKey = errors!.keys.first;

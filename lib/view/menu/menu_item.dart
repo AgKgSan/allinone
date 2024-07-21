@@ -1,4 +1,3 @@
-
 import 'package:all_in_1/common_widget/menu_row.dart';
 import 'package:all_in_1/view/menu/item_details.dart';
 import 'package:all_in_1/view/more/order_view.dart';
@@ -130,22 +129,22 @@ class _MenuItemState extends State<MenuItem> {
               const SizedBox(
                 height: 15,
               ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: menuItemsArr.length,
-                itemBuilder: ((context, index) {
-                  var mObj = menuItemsArr[index] as Map? ?? {};
-                  return MenuItemRow(mObj: mObj,onTap:(){
-                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ItemDetails()),
-                      );
-                  });
-                }),
-              ),
+              // ListView.builder(
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   shrinkWrap: true,
+              //   padding: EdgeInsets.zero,
+              //   itemCount: menuItemsArr.length,
+              //   itemBuilder: ((context, index) {
+              //     var mObj = menuItemsArr[index] as Map? ?? {};
+              //     return MenuItemRow(mObj: mObj,onTap:(){
+              //        Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) => const ItemDetails()),
+              //         );
+              //     });
+              //   }),
+              // ),
             ],
           ),
         ),

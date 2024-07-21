@@ -1,5 +1,8 @@
+import 'package:all_in_1/common_widget/menu_row.dart';
+import 'package:all_in_1/models/item.dart';
+import 'package:all_in_1/services/item_service.dart';
+import 'package:all_in_1/view/menu/item_details.dart';
 import 'package:flutter/material.dart';
-
 
 import '../../common/color_extension.dart';
 import '../../common_widget/popular_resutaurant.dart';
@@ -17,6 +20,7 @@ class OfferView extends StatefulWidget {
 
 class _OfferViewState extends State<OfferView> {
   TextEditingController txtSearch = TextEditingController();
+  final ItemService itemService = ItemService();
 
   List offerArr = [
     {
@@ -54,7 +58,7 @@ class _OfferViewState extends State<OfferView> {
   ];
 
   List recentArr = [
-  {
+    {
       "image": "assets/img/myanmarfood.webp",
       "name": "Res type",
       "rate": "4.9",
@@ -135,30 +139,50 @@ class _OfferViewState extends State<OfferView> {
                 child: SizedBox(
                   width: 140,
                   height: 30,
-                  child: RoundButton(title: "check Offers", fontSize: 12 , onpressed: () {
-                    
-                  },),
+                  child: RoundButton(
+                    title: "check Offers",
+                    fontSize: 12,
+                    onpressed: () {},
+                  ),
                 ),
               ),
               const SizedBox(
                 height: 15,
               ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(left: 20,right: 20),
-                
-                itemCount: offerArr.length,
-                itemBuilder: ((context, index) {
-                  var pObj = offerArr[index] as Map? ?? {};
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(200),
-                    child: PopularRestaurant(
-                      pObj: pObj,
-                      onTap: () {},
-                    ),
-                  );
-                }),
+              FutureBuilder<List<Item>>(
+                future: itemService.fetchItems(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    final items = snapshot.data!;
+                    return ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      itemCount: items.length,
+                      itemBuilder: ((context, index) {
+                        var mObj = items[index];
+
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(200),
+                          child: MenuItemRow(
+                            mObj: mObj,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ItemDetails(id: mObj.id),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
+                    );
+                  }
+                },
               ),
             ],
           ),

@@ -1,9 +1,10 @@
+import 'package:all_in_1/models/item.dart';
 import 'package:flutter/material.dart';
 
 import '../common/color_extension.dart';
 
 class MenuItemRow extends StatelessWidget {
-  final Map mObj;
+  final Item mObj;
   final VoidCallback onTap;
   const MenuItemRow({super.key, required this.mObj, required this.onTap});
 
@@ -16,8 +17,8 @@ class MenuItemRow extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomLeft,
           children: [
-            Image.asset(
-              mObj["image"].toString(),
+            Image.network(
+              "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
               width: double.maxFinite,
               height: 200,
               fit: BoxFit.cover,
@@ -41,7 +42,7 @@ class MenuItemRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        mObj["name"],
+                        mObj.name,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: TColor.white,
@@ -64,7 +65,7 @@ class MenuItemRow extends StatelessWidget {
                             width: 4,
                           ),
                           Text(
-                            mObj["rate"],
+                            "1",
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: TColor.primary, fontSize: 11),
@@ -73,7 +74,7 @@ class MenuItemRow extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            mObj["type"],
+                            "type",
                             textAlign: TextAlign.center,
                             style: TextStyle(color: TColor.white, fontSize: 11),
                           ),
@@ -84,7 +85,7 @@ class MenuItemRow extends StatelessWidget {
                                 TextStyle(color: TColor.primary, fontSize: 11),
                           ),
                           Text(
-                            mObj["food_type"],
+                            "food type",
                             textAlign: TextAlign.center,
                             style: TextStyle(color: TColor.white, fontSize: 12),
                           ),
