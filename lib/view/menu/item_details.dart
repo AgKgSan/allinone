@@ -32,6 +32,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   @override
   void initState() {
     super.initState();
+
     fetchItemDetail();
   }
 
