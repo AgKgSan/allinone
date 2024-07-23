@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:all_in_1/models/checkout_modal.dart';
 import 'package:all_in_1/models/local_cart.dart';
 import 'package:all_in_1/services/checkout_service.dart';
@@ -50,22 +52,21 @@ class _CheckOutState extends State<CheckOut> {
   int selectMethod = -1;
 
   void submitOrder() async {
-    CheckOutModal order = CheckOutModal(
-      orderItems: items,
-      customerAddress: 'Bangkok',
-      latitude: 12.0,
-      longitude: 32.0,
-      totalPrice: (_totalPrice + deli_fee),
-      deliveryNote: 'leave at the door',
-      deliveryCost: deli_fee,
-      subTotal: _totalPrice,
-      status: 1,
-    );
-
     // Submit the order
     CheckoutService orderService = CheckoutService();
     try {
-      await orderService.submitOrder(order);
+      await orderService.submitOrder({
+        "order_items": items,
+        "customer_address": 'Bangkok',
+        "latitude": 12.0,
+        "longitude": 32.0,
+        "total_price": (_totalPrice + deli_fee),
+        "delivery_note": 'leave at the door',
+        "delivery_cost": deli_fee,
+        "sub_total": _totalPrice,
+        "status": 1,
+        "payment_type_id": 1
+      });
       showModalBottomSheet(
           context: context,
           backgroundColor: Colors.transparent,

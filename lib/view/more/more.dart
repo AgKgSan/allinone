@@ -110,29 +110,17 @@ class _MoreViewState extends State<MoreView> {
     print(response.body);
     final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      // await authService.logout();
+    await prefs.remove('access_token');
+    await prefs.remove('user');
 
-      await prefs.remove('access_token');
-      await prefs.remove('user');
+    Navigator.of(context).pop();
 
-      Navigator.of(context).pop();
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const LoginView(),
-        ),
-      );
-    } else {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to logout'),
-        ),
-      );
-      // Show an error message to the user
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginView(),
+      ),
+    );
   }
 
   @override

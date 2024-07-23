@@ -25,7 +25,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   int qty = 1;
   bool isFav = false;
   final ItemService itemService = ItemService();
-  Item? item;
+  dynamic? item;
   bool isLoading = true;
   final LocalCartService _cartService = LocalCartService();
 
@@ -39,6 +39,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   Future<void> fetchItemDetail() async {
     try {
       final details = await itemService.fetchItemById(widget.id);
+      print(details);
       setState(() {
         item = details;
         isLoading = false;
@@ -82,7 +83,7 @@ class _ItemDetailsState extends State<ItemDetails> {
         alignment: Alignment.topCenter,
         children: [
           Image.network(
-            "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
+            item['cover_image'],
             width: media.width,
             height: media.width,
             fit: BoxFit.cover,
@@ -124,7 +125,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
                                 child: Text(
-                                  item!.name,
+                                  item['name'],
                                   style: TextStyle(
                                       color: TColor.primaryText,
                                       fontSize: 22,
@@ -149,7 +150,10 @@ class _ItemDetailsState extends State<ItemDetails> {
                                         IgnorePointer(
                                           ignoring: true,
                                           child: RatingBar.builder(
-                                            initialRating: item!.rating,
+                                            initialRating:
+                                                (item['rating'] as num?)
+                                                        ?.toDouble() ??
+                                                    0,
                                             minRating: 1,
                                             direction: Axis.horizontal,
                                             allowHalfRating: true,
@@ -171,7 +175,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                           height: 4,
                                         ),
                                         Text(
-                                          " ${item!.rating} Star Ratings",
+                                          " ${item['rating']} Star Ratings",
                                           style: TextStyle(
                                               color: TColor.primary,
                                               fontSize: 11,
@@ -184,7 +188,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          "\K\s${item!.price}",
+                                          "\K\s${item['price']}",
                                           style: TextStyle(
                                               color: TColor.primaryText,
                                               fontSize: 31,
@@ -501,7 +505,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                                                     height: 15,
                                                   ),
                                                   Text(
-                                                    "\K\s${(item!.price * qty).toString()}",
+                                                    "\K\s${(item['price'] * qty).toString()}",
                                                     style: TextStyle(
                                                         color:
                                                             TColor.primaryText,
@@ -523,13 +527,13 @@ class _ItemDetailsState extends State<ItemDetails> {
                                                         onPressed: () async {
                                                           await _cartService
                                                               .addToCart(
-                                                                  item!, qty);
+                                                                  item, qty);
                                                           ScaffoldMessenger.of(
                                                                   context)
                                                               .showSnackBar(
                                                             SnackBar(
                                                                 content: Text(
-                                                                    '${item!.name} added to cart!')),
+                                                                    '${item['name']} added to cart!')),
                                                           );
                                                         }),
                                                   )

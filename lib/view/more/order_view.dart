@@ -382,6 +382,14 @@ class _MyOrderViewState extends State<MyOrderView> {
                     const SizedBox(
                       height: 20,
                     ),
+                    RoundButton(
+                        title: "Clear Cart",
+                        onpressed: () {
+                          _cartService.clearCart();
+                        }),
+                    const SizedBox(
+                      height: 20,
+                    ),
                   ],
                 ),
               ),

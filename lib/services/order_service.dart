@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OrderService {
   // Replace with your API endpoint
 
-  Future<List<Order>> getOrderHistory() async {
-    String _baseUrl = 'http://127.0.0.1:8000/api/orders_history';
+  Future<List<dynamic>> getOrderHistory() async {
+    String _baseUrl = 'http://127.0.0.1:8000/api/orders-history';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -23,9 +23,11 @@ class OrderService {
       },
     );
 
+    print("----print");
+    print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Order.fromJson(json)).toList();
+      return data;
     } else {
       throw Exception('Failed to load categories');
     }

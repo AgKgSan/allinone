@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:all_in_1/common/color_extension.dart';
 import 'package:all_in_1/models/order.dart';
 import 'package:all_in_1/view/more/order_view.dart';
 import 'package:flutter/material.dart';
 
 class OrderDetail extends StatefulWidget {
-  final Order order;
+  final dynamic order;
   const OrderDetail({super.key, required this.order});
 
   @override
@@ -15,6 +17,17 @@ class _OrderDetailState extends State<OrderDetail> {
   @override
   Widget build(BuildContext context) {
     // Sample data; replace this with real data from your backend
+    final dynamic items;
+
+    @override
+    void initState() {
+      super.initState();
+    }
+
+    Future<void> _formatItem() async {
+      json.decode(widget.order['order_items']);
+      setState(() {});
+    }
 
     return Scaffold(
       body: Padding(
@@ -68,40 +81,40 @@ class _OrderDetailState extends State<OrderDetail> {
               height: 10,
             ),
             Text(
-              'Order ID: ${widget.order.id}',
+              'Order ID: ${widget.order['id']}',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
             SizedBox(height: 16.0),
-            Text('Customer Address: ${widget.order.customerAddress}'),
-            Text('Delivery Fee: ${widget.order.deliveryCost}'),
-            Text('Sub Total: ${widget.order.subTotal}'),
-            Text('Grand Total: ${widget.order.totalPrice}'),
-            Text('Order Status: ${widget.order.status}'),
+            Text('Customer Address: ${widget.order['customer_address']}'),
+            Text('Delivery Fee: ${widget.order['delivery_cost']}'),
+            Text('Sub Total: ${widget.order['sub_total']}'),
+            Text('Grand Total: ${widget.order['total_price']}'),
+            Text('Order Status: ${widget.order['status']}'),
             // Text('Latitude: ${widget.order.latitude}'),
             // Text('Longitude: ${widget.order.longitude}'),
-            Text('Delivery Note: ${widget.order.deliveryNote}'),
+            Text('Delivery Note: ${widget.order['delivery_note']}'),
             // Text('Delivery Cost: \$${orderDetails["delivery_cost"]}'),
             // Text('Subtotal: \$${orderDetails["sub_total"]}'),
             // Text('Total Price: \$${orderDetails["total_price"]}'),
             // Text('Status: ${_getStatusText(orderDetails["status"])}'),
             // Text('Created At: ${orderDetails["created_at"]}'),
             // Text('Updated At: ${orderDetails["updated_at"]}'),
-            ...widget.order.orderItems!.map((item) {
+            ...widget.order['order_items'].map((item) {
               final itemData = item;
               return Card(
                 margin: EdgeInsets.symmetric(vertical: 4.0),
                 elevation: 2.0,
                 child: ListTile(
                   leading: Image.network(
-                    "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
+                    item['logo'],
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
                   ),
                   title: Text("Item"),
-                  subtitle:
-                      Text('Quantity: ${item.quantity} x \K\s${item.price}'),
-                  trailing: Text('\K\s${item.quantity * item.price}'),
+                  subtitle: Text(
+                      'Quantity: ${item['quantity']} x \K\s${item['price']}'),
+                  trailing: Text('\K\s${item['quantity'] * item['price']}'),
                 ),
               );
             }).toList(),

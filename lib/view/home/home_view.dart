@@ -7,6 +7,8 @@ import 'package:all_in_1/common_widget/round_textfield.dart';
 import 'package:all_in_1/common_widget/view_all.dart';
 import 'package:all_in_1/models/category.dart';
 import 'package:all_in_1/services/category_service.dart';
+import 'package:all_in_1/services/item_service.dart';
+import 'package:all_in_1/services/res_service.dart';
 import 'package:all_in_1/view/more/order_view.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +26,8 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   TextEditingController txtSearch = TextEditingController();
   final CategoryService categoryService = CategoryService();
+  final ItemService itemService = ItemService();
+  final ResService resService = ResService();
 
   List catArr = [
     {"image": "assets/img/offerCat.png", "name": "Offers"},
@@ -202,7 +206,7 @@ class _HomeViewState extends State<HomeView> {
             ),
             SizedBox(
               height: 120,
-              child: FutureBuilder<List<Category>>(
+              child: FutureBuilder<List<dynamic>>(
                 future: categoryService.fetchCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -232,19 +236,29 @@ class _HomeViewState extends State<HomeView> {
                 onView: () {},
               ),
             ),
-            // ListView.builder(
-            //   physics: const NeverScrollableScrollPhysics(),
-            //   shrinkWrap: true,
-            //   padding: EdgeInsets.zero,
-            //   itemCount: popArr.length,
-            //   itemBuilder: ((context, index) {
-            //     var pObj = popArr[index] as Map? ?? {};
-            //     return PopularRestaurant(
-            //       pObj: pObj,
-            //       onTap: () {},
-            //     );
-            //   }),
-            // ),
+            FutureBuilder<List<dynamic>>(
+              future: resService.fetchRess(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else {
+                  final ress = snapshot.data!;
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: ress.length,
+                    itemBuilder: ((context, index) {
+                      var pObj = ress[index];
+                      return PopularRestaurant(
+                        pObj: pObj,
+                        onTap: () {},
+                      );
+                    }),
+                  );
+                }
+              },
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ViewAll(
@@ -254,17 +268,27 @@ class _HomeViewState extends State<HomeView> {
             ),
             SizedBox(
               height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                itemCount: mostPopArr.length,
-                itemBuilder: ((context, index) {
-                  var mObj = mostPopArr[index] as Map? ?? {};
-                  return MostPopular(
-                    mObj: mObj,
-                    onTap: () {},
-                  );
-                }),
+              child: FutureBuilder<List<dynamic>>(
+                future: itemService.fetchPopularItems(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    final items = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      itemCount: items.length,
+                      itemBuilder: ((context, index) {
+                        var mObj = items[index];
+                        return MostPopular(
+                          mObj: mObj,
+                          onTap: () {},
+                        );
+                      }),
+                    );
+                  }
+                },
               ),
             ),
             Padding(

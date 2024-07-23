@@ -102,7 +102,7 @@ class _OrderHistoryState extends State<OrderHistory> {
                   ],
                 ),
               ),
-              FutureBuilder<List<Order>>(
+              FutureBuilder<List<dynamic>>(
                 future: _orderService.getOrderHistory(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

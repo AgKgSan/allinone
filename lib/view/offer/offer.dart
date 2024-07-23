@@ -149,7 +149,7 @@ class _OfferViewState extends State<OfferView> {
               const SizedBox(
                 height: 15,
               ),
-              FutureBuilder<List<Item>>(
+              FutureBuilder<List<dynamic>>(
                 future: itemService.fetchItems(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -173,7 +173,7 @@ class _OfferViewState extends State<OfferView> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ItemDetails(id: mObj.id),
+                                      ItemDetails(id: mObj['id']),
                                 ),
                               );
                             },

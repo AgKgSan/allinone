@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../common/color_extension.dart';
 
 class PopularRestaurant extends StatelessWidget {
-  final Map pObj;
+  final dynamic pObj;
   final VoidCallback onTap;
   const PopularRestaurant({super.key, required this.pObj, required this.onTap});
 
@@ -18,8 +18,8 @@ class PopularRestaurant extends StatelessWidget {
           children: [
             ClipRRect(
               // borderRadius: BorderRadius.circular(70),
-              child: Image.asset(
-                pObj["image"].toString(),
+              child: Image.network(
+                pObj['logo'],
                 width: double.maxFinite,
                 height: 200,
                 fit: BoxFit.cover,
@@ -60,7 +60,7 @@ class PopularRestaurant extends StatelessWidget {
                         width: 4,
                       ),
                       Text(
-                        pObj["rate"],
+                        pObj["rating"].toString(),
                         textAlign: TextAlign.center,
                         style: TextStyle(color: TColor.primary, fontSize: 11),
                       ),
@@ -68,7 +68,7 @@ class PopularRestaurant extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                        "(${pObj["rating"]} Ratings)",
+                        "(${pObj["rating"].toString()} Ratings)",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: TColor.secondaryText, fontSize: 11),
@@ -77,7 +77,7 @@ class PopularRestaurant extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                        pObj["type"],
+                        "Type",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: TColor.secondaryText, fontSize: 11),
@@ -88,7 +88,7 @@ class PopularRestaurant extends StatelessWidget {
                         style: TextStyle(color: TColor.primary, fontSize: 11),
                       ),
                       Text(
-                        pObj["food_type"],
+                        "Food Type",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: TColor.secondaryText, fontSize: 12),

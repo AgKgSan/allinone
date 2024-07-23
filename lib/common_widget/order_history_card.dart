@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class OrderHistoryCard extends StatelessWidget {
-  final Order order;
+  final dynamic order;
 
   const OrderHistoryCard({
     super.key,
@@ -42,7 +42,7 @@ class OrderHistoryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Order ID: ${order.id}',
+                  'Order ID: ${order['id']}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -50,7 +50,7 @@ class OrderHistoryCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.0),
                 Text(
-                  'Address: ${order.customerAddress}',
+                  'Address: ${order['customer_address']}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -58,7 +58,7 @@ class OrderHistoryCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.0),
                 Text(
-                  'Total : ${order.totalPrice}',
+                  'Total : ${order['total_price']}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -66,7 +66,7 @@ class OrderHistoryCard extends StatelessWidget {
                 ),
                 SizedBox(height: 8.0),
                 Text(
-                  'Order Date: ${_formatDate(order.created_at)}',
+                  'Order Date: ${_formatDate(order['created_at'])}',
                   style: TextStyle(
                     color: Colors.grey[600],
                   ),
@@ -76,7 +76,7 @@ class OrderHistoryCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Status: ${order.status}',
+                      'Status: ${order['status']}',
                       style: TextStyle(
                         color: _getStatusColor("pending"),
                         fontWeight: FontWeight.bold,

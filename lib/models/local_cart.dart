@@ -4,7 +4,7 @@ class LocalCartItem {
   final int id;
   final int item_id;
   final String name;
-  final double price;
+  final int price;
   final int quantity;
 
   LocalCartItem({
@@ -29,7 +29,7 @@ class LocalCartItem {
         id: json['id'] ?? 0,
         item_id: json['item_id'] ?? 0,
         name: json['name'] ?? "",
-        price: (json['price'] as num?)?.toDouble() ?? 0,
+        price: json['price'],
         quantity: json['quantity'] ?? 0,
       );
 }

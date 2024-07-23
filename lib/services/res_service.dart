@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:all_in_1/models/item.dart';
 import 'package:http/http.dart' as http;
 
-class ItemService {
+class ResService {
   final String apiUrl =
-      'http://127.0.0.1:8000/api/items'; // Replace with your API URL
+      'http://127.0.0.1:8000/api/restaurants'; // Replace with your API URL
 
-  Future<List<dynamic>> fetchItems() async {
+  Future<List<dynamic>> fetchRess() async {
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {

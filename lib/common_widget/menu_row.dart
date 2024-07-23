@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../common/color_extension.dart';
 
 class MenuItemRow extends StatelessWidget {
-  final Item mObj;
+  final dynamic mObj;
   final VoidCallback onTap;
   const MenuItemRow({super.key, required this.mObj, required this.onTap});
 
@@ -18,7 +18,8 @@ class MenuItemRow extends StatelessWidget {
           alignment: Alignment.bottomLeft,
           children: [
             Image.network(
-              "http://127.0.0.1:8000/storage/categories/01J387A3EW5QSBEK5Y4YKREM4Y.png",
+              mObj['cover_image'] ??
+                  "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
               width: double.maxFinite,
               height: 200,
               fit: BoxFit.cover,
@@ -42,7 +43,7 @@ class MenuItemRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        mObj.name,
+                        mObj['name'],
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: TColor.white,
